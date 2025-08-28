@@ -16,3 +16,8 @@ build/
 # Logs
 *.log
 attached_assets/
+.env
+attached_assets/
+__pycache__/
+*.log
+.env.*
