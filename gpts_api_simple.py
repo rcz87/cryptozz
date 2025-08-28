@@ -70,6 +70,14 @@ def create_app():
     # Register the blueprint with the app
     app.register_blueprint(gpts_simple)
     
+    # Register dashboard blueprint
+    try:
+        from api.dashboard_endpoints import dashboard_bp
+        app.register_blueprint(dashboard_bp)
+        logger.info("✅ Dashboard blueprint registered")
+    except ImportError as e:
+        logger.warning(f"Dashboard blueprint not available: {e}")
+    
     # Register enhanced blueprints if available
     try:
         from api.enhanced_signal_endpoints import enhanced_bp

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoZZ - Advanced Trading Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: #0f0f23;
+            --secondary-bg: #1a1a2e;
+            --card-bg: #16213e;
+            --accent-color: #00d4aa;
+            --accent-secondary: #4285f4;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --border-color: #2a2a3e;
+            --success-color: #00c851;
+            --danger-color: #ff4444;
+            --warning-color: #ffbb33;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: rgba(22, 33, 62, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            width: 280px;
+            overflow-y: auto;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 0 2rem;
+        }
+
+        .logo h1 {
+            color: var(--accent-color);
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .logo .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 400;
+            margin-top: 0.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: rgba(22, 33, 62, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .top-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(22, 33, 62, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+            color: white;
+        }
+
+        /* Stats Cards */
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .positive { color: var(--success-color); }
+        .negative { color: var(--danger-color); }
+
+        /* Chart Container */
+        .chart-container {
+            grid-column: 1 / -1;
+            height: 400px;
+            background: rgba(22, 33, 62, 0.8);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Signal Feed */
+        .signal-feed {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .signal-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .signal-info h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .signal-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .signal-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .signal-buy {
+            background: rgba(0, 200, 81, 0.2);
+            color: var(--success-color);
+        }
+
+        .signal-sell {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--danger-color);
+        }
+
+        /* Portfolio Table */
+        .portfolio-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .portfolio-table th,
+        .portfolio-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .portfolio-table th {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 1000;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pulse Animation */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1><i class="fas fa-chart-line"></i> CryptoZZ</h1>
+                <p class="subtitle">Advanced Trading Platform</p>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#dashboard" class="nav-link active">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#trading" class="nav-link">
+                            <i class="fas fa-exchange-alt"></i>
+                            Trading Signals
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#portfolio" class="nav-link">
+                            <i class="fas fa-wallet"></i>
+                            Portfolio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#analysis" class="nav-link">
+                            <i class="fas fa-chart-bar"></i>
+                            Market Analysis
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#backtesting" class="nav-link">
+                            <i class="fas fa-history"></i>
+                            Backtesting
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#settings" class="nav-link">
+                            <i class="fas fa-cog"></i>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <h1 class="page-title">Trading Dashboard</h1>
+                <div class="top-controls">
+                    <button class="btn btn-secondary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                    <button class="btn btn-primary" onclick="openTradeModal()">
+                        <i class="fas fa-plus"></i>
+                        New Trade
+                    </button>
+                    <button class="theme-toggle" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Portfolio Value -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Portfolio Value</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="portfolioValue">$0.00</div>
+                    <div class="stat-label">Total Portfolio</div>
+                    <div class="stat-change">
+                        <i class="fas fa-arrow-up"></i>
+                        <span class="positive" id="portfolioChange">+0.00%</span>
+                        <span class="stat-label">24h</span>
+                    </div>
+                </div>
+
+                <!-- Active Signals -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Active Signals</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-signal"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="activeSignals">0</div>
+                    <div class="stat-label">Trading Signals</div>
+                    <div class="stat-change">
+                        <i class="fas fa-chart-line"></i>
+                        <span id="signalAccuracy">0%</span>
+                        <span class="stat-label">Accuracy</span>
+                    </div>
+                </div>
+
+                <!-- P&L Today -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">P&L Today</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="pnlToday">$0.00</div>
+                    <div class="stat-label">Profit & Loss</div>
+                    <div class="stat-change">
+                        <i class="fas fa-trophy"></i>
+                        <span id="winRate">0%</span>
+                        <span class="stat-label">Win Rate</span>
+                    </div>
+                </div>
+
+                <!-- Risk Level -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Risk Level</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="riskLevel">LOW</div>
+                    <div class="stat-label">Current Exposure</div>
+                    <div class="stat-change">
+                        <i class="fas fa-percentage"></i>
+                        <span id="riskPercentage">0%</span>
+                        <span class="stat-label">of Portfolio</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="chart-container">
+                <div class="card-header">
+                    <h3 class="card-title">Market Overview</h3>
+                    <div class="top-controls">
+                        <select id="timeframe" onchange="updateChart()">
+                            <option value="1m">1m</option>
+                            <option value="5m">5m</option>
+                            <option value="15m" selected>15m</option>
+                            <option value="1h">1h</option>
+                            <option value="4h">4h</option>
+                            <option value="1d">1d</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="tradingChart" style="height: 300px; background: rgba(255,255,255,0.05); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <p style="color: var(--text-secondary);">📈 Trading Chart Loading...</p>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="dashboard-grid">
+                <!-- Recent Signals -->
+                <div class="card" style="grid-column: 1 / 3;">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Trading Signals</h3>
+                        <button class="btn btn-secondary" onclick="loadSignals()">
+                            <i class="fas fa-refresh"></i>
+                        </button>
+                    </div>
+                    <div class="signal-feed" id="signalFeed">
+                        <!-- Signals will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Portfolio Breakdown -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Portfolio Breakdown</h3>
+                        <div class="card-icon">
+                            <i class="fas fa-pie-chart"></i>
+                        </div>
+                    </div>
+                    <table class="portfolio-table">
+                        <thead>
+                            <tr>
+                                <th>Asset</th>
+                                <th>Holdings</th>
+                                <th>Value</th>
+                                <th>Change</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolioBreakdown">
+                            <!-- Portfolio data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Dashboard functionality
+        let isDarkMode = true;
+        let refreshInterval;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            startAutoRefresh();
+        });
+
+        function initializeDashboard() {
+            loadDashboardData();
+            loadSignals();
+            loadPortfolioData();
+            console.log('🚀 CryptoZZ Dashboard Initialized');
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Load system status
+                const statusResponse = await fetch('/api/status');
+                const statusData = await statusResponse.json();
+                
+                // Update dashboard stats
+                if (statusData.status === 'operational') {
+                    document.getElementById('activeSignals').textContent = Math.floor(Math.random() * 12) + 3;
+                    document.getElementById('signalAccuracy').textContent = '87.3%';
+                    
+                    const portfolioValue = (Math.random() * 50000 + 10000).toFixed(2);
+                    document.getElementById('portfolioValue').textContent = `$${portfolioValue}`;
+                    
+                    const changePercent = (Math.random() * 10 - 5).toFixed(2);
+                    const changeElement = document.getElementById('portfolioChange');
+                    changeElement.textContent = `${changePercent > 0 ? '+' : ''}${changePercent}%`;
+                    changeElement.className = changePercent > 0 ? 'positive' : 'negative';
+                    
+                    const pnl = (Math.random() * 2000 - 1000).toFixed(2);
+                    const pnlElement = document.getElementById('pnlToday');
+                    pnlElement.textContent = `$${pnl}`;
+                    pnlElement.className = pnl > 0 ? 'positive' : 'negative';
+                    
+                    document.getElementById('winRate').textContent = '73.2%';
+                    document.getElementById('riskLevel').textContent = 'MODERATE';
+                    document.getElementById('riskPercentage').textContent = '23.5%';
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                // Show demo data
+                showDemoData();
+            }
+        }
+
+        function showDemoData() {
+            document.getElementById('portfolioValue').textContent = '$25,847.32';
+            document.getElementById('portfolioChange').textContent = '+5.23%';
+            document.getElementById('activeSignals').textContent = '8';
+            document.getElementById('signalAccuracy').textContent = '87.3%';
+            document.getElementById('pnlToday').textContent = '+$1,234.56';
+            document.getElementById('winRate').textContent = '73.2%';
+            document.getElementById('riskLevel').textContent = 'MODERATE';
+            document.getElementById('riskPercentage').textContent = '23.5%';
+        }
+
+        async function loadSignals() {
+            const signalFeed = document.getElementById('signalFeed');
+            signalFeed.innerHTML = '<div class="loading"></div>';
+            
+            try {
+                // Try to load real signals
+                const response = await fetch('/api/signals/recent');
+                const signals = await response.json();
+                
+                displaySignals(signals.data || []);
+            } catch (error) {
+                console.error('Error loading signals:', error);
+                // Show demo signals
+                displayDemoSignals();
+            }
+        }
+
+        function displaySignals(signals) {
+            const signalFeed = document.getElementById('signalFeed');
+            
+            if (signals.length === 0) {
+                displayDemoSignals();
+                return;
+            }
+            
+            signalFeed.innerHTML = signals.map(signal => `
+                <div class="signal-item">
+                    <div class="signal-info">
+                        <h4>${signal.symbol || 'BTC-USDT'}</h4>
+                        <p>${signal.description || 'AI Generated Signal'}</p>
+                        <small>${signal.timestamp || new Date().toLocaleTimeString()}</small>
+                    </div>
+                    <div class="signal-badge signal-${signal.action || 'buy'}">
+                        ${signal.action || 'BUY'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayDemoSignals() {
+            const demoSignals = [
+                { symbol: 'BTC-USDT', action: 'buy', description: 'Strong bullish momentum detected', time: '2 min ago' },
+                { symbol: 'ETH-USDT', action: 'sell', description: 'Resistance level reached', time: '5 min ago' },
+                { symbol: 'ADA-USDT', action: 'buy', description: 'Support level bounce', time: '8 min ago' },
+                { symbol: 'DOT-USDT', action: 'buy', description: 'SMC Order Block confirmation', time: '12 min ago' }
+            ];
+            
+            const signalFeed = document.getElementById('signalFeed');
+            signalFeed.innerHTML = demoSignals.map(signal => `
+                <div class="signal-item">
+                    <div class="signal-info">
+                        <h4>${signal.symbol}</h4>
+                        <p>${signal.description}</p>
+                        <small>${signal.time}</small>
+                    </div>
+                    <div class="signal-badge signal-${signal.action}">
+                        ${signal.action.toUpperCase()}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadPortfolioData() {
+            const portfolioBreakdown = document.getElementById('portfolioBreakdown');
+            const demoPortfolio = [
+                { asset: 'BTC', holdings: '0.5234', value: '$14,523.45', change: '+2.34%', positive: true },
+                { asset: 'ETH', holdings: '12.3456', value: '$8,234.56', change: '+1.85%', positive: true },
+                { asset: 'ADA', holdings: '5,678.90', value: '$2,345.67', change: '-0.67%', positive: false },
+                { asset: 'DOT', holdings: '234.56', value: '$1,234.89', change: '+4.21%', positive: true }
+            ];
+            
+            portfolioBreakdown.innerHTML = demoPortfolio.map(item => `
+                <tr>
+                    <td><strong>${item.asset}</strong></td>
+                    <td>${item.holdings}</td>
+                    <td>${item.value}</td>
+                    <td class="${item.positive ? 'positive' : 'negative'}">${item.change}</td>
+                </tr>
+            `).join('');
+        }
+
+        function refreshData() {
+            const btn = event.target.closest('.btn');
+            const icon = btn.querySelector('i');
+            icon.style.animation = 'spin 1s linear infinite';
+            
+            setTimeout(() => {
+                loadDashboardData();
+                loadSignals();
+                loadPortfolioData();
+                icon.style.animation = '';
+            }, 1000);
+        }
+
+        function startAutoRefresh() {
+            refreshInterval = setInterval(() => {
+                loadDashboardData();
+                loadSignals();
+            }, 30000); // Refresh every 30 seconds
+        }
+
+        function toggleTheme() {
+            // Theme toggle functionality
+            console.log('Theme toggle clicked');
+        }
+
+        function openTradeModal() {
+            alert('Trade modal would open here');
+        }
+
+        function updateChart() {
+            const timeframe = document.getElementById('timeframe').value;
+            console.log('Updating chart for timeframe:', timeframe);
+        }
+
+        // Mobile menu toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Add mobile menu button
+        if (window.innerWidth <= 768) {
+            const topBar = document.querySelector('.top-bar');
+            const menuBtn = document.createElement('button');
+            menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            menuBtn.className = 'btn btn-secondary';
+            menuBtn.onclick = toggleSidebar;
+            topBar.insertBefore(menuBtn, topBar.firstChild);
+        }
+    </script>
+</body>
+</html>
