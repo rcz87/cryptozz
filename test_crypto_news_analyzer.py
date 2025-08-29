@@ -6,6 +6,7 @@ import asyncio
 import json
 from datetime import datetime, timezone
 from core.crypto_news_analyzer import CryptoNewsAnalyzer
+import pytest
 
 async def test_crypto_news_analyzer():
     """Test comprehensive crypto news analyzer functionality"""
