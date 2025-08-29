@@ -22,3 +22,6 @@ __pycache__/
 *.log
 .env.*
 cryptozz-*.tar.gz
+
+.replit-deployment/
+*.tar.gz
