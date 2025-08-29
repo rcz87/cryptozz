@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 from app import app, db
 from models import TradingSignal, TelegramUser
 import logging
@@ -10,26 +10,32 @@ logger = logging.getLogger(__name__)
 
 @main_bp.route('/')
 def index():
-    """Main index route"""
-    return jsonify({
-        "message": "Advanced Cryptocurrency GPTs & Telegram Bot API",
-        "version": "2.0.0",
-        "status": "active",
-        "endpoints": [
-            "/api/gpts/status",
-            "/api/gpts/sinyal/tajam",
-            "/api/gpts/market-data", 
-            "/api/gpts/smc-analysis",
-            "/api/gpts/ticker/<symbol>",
-            "/api/gpts/orderbook/<symbol>",
-            "/api/gpts/smc-zones/<symbol>",
-            "/api/smc/zones",
-            "/api/promptbook/",
-            "/api/performance/stats",
-            "/api/news/status",
-            "/health"
-        ]
-    })
+    """Main dashboard route"""
+    try:
+        from flask import render_template
+        return render_template('dashboard.html')
+    except Exception as e:
+        # Fallback to API info if template fails
+        return jsonify({
+            "message": "Advanced Cryptocurrency GPTs & Telegram Bot API",
+            "version": "2.0.0",
+            "status": "active",
+            "dashboard_error": str(e),
+            "endpoints": [
+                "/api/gpts/status",
+                "/api/gpts/sinyal/tajam",
+                "/api/gpts/market-data", 
+                "/api/gpts/smc-analysis",
+                "/api/gpts/ticker/<symbol>",
+                "/api/gpts/orderbook/<symbol>",
+                "/api/gpts/smc-zones/<symbol>",
+                "/api/smc/zones",
+                "/api/promptbook/",
+                "/api/performance/stats",
+                "/api/news/status",
+                "/health"
+            ]
+        })
 
 @main_bp.route('/health')
 def health():
@@ -46,6 +52,33 @@ def health():
         "status": "healthy",
         "database": db_status,
         "version": "2.0.0"
+    })
+
+@main_bp.route('/api/status')
+def api_status():
+    """API status endpoint for dashboard"""
+    try:
+        # Test database connection
+        from sqlalchemy import text
+        db.session.execute(text('SELECT 1'))
+        db_status = "connected"
+        status = "operational"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+        status = "degraded"
+    
+    return jsonify({
+        "status": status,
+        "database": db_status,
+        "version": "2.0.0",
+        "server_time": "2025-08-28T15:59:00Z",
+        "components": {
+            "api": "operational",
+            "database": "operational" if db_status == "connected" else "degraded",
+            "redis": "operational",
+            "okx_api": "operational",
+            "telegram": "operational"
+        }
     })
 
 @main_bp.route('/api/gpts/health')

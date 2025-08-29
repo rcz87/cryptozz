@@ -21,3 +21,4 @@ attached_assets/
 __pycache__/
 *.log
 .env.*
+cryptozz-*.tar.gz
