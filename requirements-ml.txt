@@ -1,0 +1,9 @@
+# ML / TA / Market libs
+tensorflow>=2.14.0,<2.17   # aman di Python 3.11, match numpy<2
+scikit-learn>=1.7.1
+xgboost>=3.0.3
+lightgbm>=4.5.0
+ta>=0.11.0
+pandas-ta>=0.3.14b
+yfinance>=0.2.38
+ccxt>=4.4.16
