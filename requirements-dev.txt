@@ -8,3 +8,5 @@ werkzeug==3.0.1
 psycopg2-binary==2.9.9
 pydantic==2.5.0
 numpy==1.26.4
+uv add --upgrade tensorflow>=2.16
+uv lock
